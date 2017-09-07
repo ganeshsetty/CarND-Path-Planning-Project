@@ -198,13 +198,7 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
-  //Start in lane 1
-  //int lane = 1;
-
-  // Have reference velocity as target 
-  //double ref_vel = 49.5; //mph
-  //double ref_vel = 0;
-
+  
   Vehicle sdc = Vehicle(); // self driving car
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&sdc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,uWS::OpCode opCode) {
@@ -246,19 +240,20 @@ int main() {
           	int prev_size = previous_path_x.size();
                 // Sensor Fusion Data, a list of all other cars on the same side of the road.
           	//auto sensor_fusion = j[1]["sensor_fusion"];
-                vector<vector<double>> sensor_fusion = j[1]["sensor_fusion"];               
-                cout<< "Inside  main() before calling behavior_planning"<<endl;
-                vector<double> ego_params =sdc.behavior_planning(sensor_fusion, previous_path_x,car_s, end_path_s);
+               vector<vector<double>> sensor_fusion = j[1]["sensor_fusion"];               
+               /* ******************************************************* 
+               *                  Behavior Planning                     *
+               **********************************************************/
+               vector<double> ego_params =sdc.behavior_planning(sensor_fusion, previous_path_x,car_s, end_path_s);
                 
                 double lane = ego_params[0];
                 double ego_vel = ego_params[1];
-                                
-                //cout << "o/p of behaviour planning lane: "<< lane <<"," << "ego_vel:" << ego_vel;
-                //path planning
-
-                //bool too_close = false;
-                                
-                // Create a list of widely spaced (x,y) waypoints evenly spaced at                   30m
+                      
+                /* ******************************************************
+                 *                 Path planning                        *
+                 ********************************************************/
+                                                
+                // Create a list of widely spaced (x,y) waypoints evenly spaced at                   40m
                 //Later we will interpolate these waypoints with a spline and fill                  it with more points to control speed
                 vector<double> ptsx;
                 vector<double> ptsy;
@@ -267,11 +262,8 @@ int main() {
                 //either we reference the starting point where the car is or previ                  ous path's end point
                 double ref_x = car_x;
                 double ref_y = car_y;
-
                 double ref_yaw = deg2rad(car_yaw);
-                
-                //cout << "ref_x,ref_y:" << ref_x << "," << ref_y << endl;               
-
+                                              
                 // if previous path size is almost empty, use the car as starting reference
                 if(prev_size <2)
                 {
@@ -279,11 +271,8 @@ int main() {
                    double prev_car_x = car_x - cos(car_yaw);
                    double prev_car_y = car_y - sin(car_yaw);
 
-                   //cout << "prev_car_x,prev_car_y=" << prev_car_x <<"," << prev_car_y<< endl;      
-
                    ptsx.push_back(prev_car_x);
                    ptsx.push_back(car_x);
-
 
                    ptsy.push_back(prev_car_y);
                    ptsy.push_back(car_y);
@@ -299,8 +288,6 @@ int main() {
                    double ref_y_prev = previous_path_y[prev_size -2];
                    ref_yaw = atan2(ref_y - ref_y_prev,ref_x -ref_x_prev);
 
-                   //cout << "ref_x,refy " << ref_x << "," << ref_y << endl;
-                   //cout << "ref_x_prev , ref_y_prev " << ref_x_prev << "," << ref_y_prev << endl;
 
                    //Use two points that make the path tangent to previous end point
                    ptsx.push_back(ref_x_prev);
@@ -311,12 +298,10 @@ int main() {
                 }
 
                 // In frenet add evenly 30m spaced points ahead of starting refernce  
-                vector<double> next_wp0 = getXY(car_s+30,(2+4*lane),map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                vector<double> next_wp1 = getXY(car_s+60,(2+4*lane),map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                vector<double> next_wp2 = getXY(car_s+90,(2+4*lane),map_waypoints_s, map_waypoints_x, map_waypoints_y);                    
- 
-                //cout << "next_wp0[0],next_wp0[1]=" << next_wp0[0] << "," << next_wp0[1] << endl;
-      
+                vector<double> next_wp0 = getXY(car_s+40,(2+4*lane),map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                vector<double> next_wp1 = getXY(car_s+80,(2+4*lane),map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                vector<double> next_wp2 = getXY(car_s+120,(2+4*lane),map_waypoints_s, map_waypoints_x, map_waypoints_y);                    
+       
                 ptsx.push_back(next_wp0[0]);
                 ptsx.push_back(next_wp1[0]);
                 ptsx.push_back(next_wp2[0]);
@@ -325,29 +310,21 @@ int main() {
                 ptsy.push_back(next_wp1[1]);
                 ptsy.push_back(next_wp2[1]);
 
-
                 //Transform to car's local coordinate system
                 for(int i=0; i < ptsx.size(); i++)
                 {
-	           //cout << " Before Transform ptsx,ptsy" << ptsx[i]<< "," <<ptsy[i] << endl;
                    double shift_x = ptsx[i] - ref_x;
                    double shift_y = ptsy[i] - ref_y;
 
                    ptsx[i] = (shift_x*cos(0-ref_yaw)-shift_y*sin(0-ref_yaw));
                    ptsy[i] = (shift_x*sin(0-ref_yaw)+shift_y*cos(0-ref_yaw));
-
-                   //cout << "After transform ptsx,ptsy" << ptsx[i] <<"," << ptsy[i] << endl;
                 }
 
                 //Create a spline
                 tk::spline s;
-                
-                //cout << "spline anchor points: ptsx = " << ptsx[0]  << "," << ptsx[1] << "," << ptsx[2] << "," << ptsx[3] <<"," << ptsx[4] << endl;
 
                 //set (x,y) points to spline
                 s.set_points(ptsx,ptsy);        
-
-          	
 
                 //Define the actual (x,y) points we will use for the planner
           	vector<double> next_x_vals;
@@ -356,29 +333,23 @@ int main() {
                 //Start with all the previous path points from last time
                 for(int i = 0; i < previous_path_x.size(); i++)
                 {
-                   //cout << "if previous_path remaining exists" << endl;
                    next_x_vals.push_back(previous_path_x[i]);
                    next_y_vals.push_back(previous_path_y[i]);
                 }
 
                 // Calculate how to break up spline points so that we travel at our desired reference velocity
-                double target_x = 30.0;
+                double target_x = 40.0;
                 double target_y = s(target_x);
                 double target_dist = sqrt((target_x)*(target_x) + (target_y)*(target_y));
                 double x_add_on =0;
 
                 // fill up the rest of our path planner after filling it with previous points, here we will always output 50 points
-                for(int i=1; i <= 50 - previous_path_x.size(); i++)
+                for(int i=1; i <= 30 - previous_path_x.size(); i++)
                 {
                    double N = (target_dist/(0.02*ego_vel/2.24));
                    double x_point = x_add_on+(target_x)/N;
                    double y_point = s(x_point);
                    
-                   //cout << "x_point,y_point" << x_point << "," << y_point <<endl;
-                   
-                   //cout << "N =" << N << endl;
-                   //cout << "previous_path_x.size()=" << previous_path_x.size();
-
                    x_add_on = x_point;
 
                    double x_ref = x_point;
@@ -391,20 +362,11 @@ int main() {
                    x_point+=ref_x;
                    y_point+=ref_y;
 
-                   //cout << "x_point" << x_point;
-                   //cout << "y_point" << y_point; :wq!
-
-
                    next_x_vals.push_back(x_point);
                    next_y_vals.push_back(y_point);
                 }
 
                                               
-/*                for(int i =0; i < 20 ; i++) 
-                {
-                    cout << next_x_vals[i] << "--" << next_y_vals[i] << endl;
-                }
-*/
                 json msgJson;
                                 
           	msgJson["next_x"] = next_x_vals;
