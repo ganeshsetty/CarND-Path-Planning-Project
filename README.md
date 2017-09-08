@@ -27,7 +27,9 @@ To realize,the logic used is the ego vehicle velocity decreases rapidly(more nea
 
 This implemetation effectively handles by avoiding collision in situations like when suddenly a vehicle from adjacent lane changes lane and  comes within buffer zone in front of ego vehicle. This algorithm is function of behavior planner module.
 
-ii) ***Vehicles unidentified***:
+ii) ***Vehicles unidentified***: These corner cases occur(when completing lap) i.e when ego vehicle and other vehicles position (s)in lanes are divided on either side of  6945.544 meters.Solution for this is implemented in function *Vehicle::cost_keep_lane* (line 143-145) and *Vehicle::cost_lane_change* (line 241-243 , 253-255 etc)
+
+
 
 
 # CarND-Path-Planning-Project
