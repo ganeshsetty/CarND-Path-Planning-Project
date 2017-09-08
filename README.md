@@ -1,3 +1,16 @@
+# Path Planning
+In this project, designed a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. It also ensures self driving car to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data.
+
+The steps involved in designing path planner
+
+i) **Behavior planner :** - Provides guidance to trajectory planner about what sorts of maneuvers they should plan trajectories for. (like keep lane, lane change left, lane change right)
+
+ii) Trajectory planner : - Generates drivable trajectories with ensuring max acceleration in m/s^2 and Jerk in m/s^3 are not exceeded, smooth changing of lanes to pass over the slower moving front vehicle in order to maintain less or equal to speed limit (49.5 mph).
+
+
+
+
+
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
    
