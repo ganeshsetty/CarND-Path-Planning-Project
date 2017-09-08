@@ -17,7 +17,17 @@ The above screenshot shows the smooth changeover of lane with details on acceler
 The sample video of run is available https://youtu.be/aHAss-NvcbU
 It is also tested multiple times and ran beyond 15 miles without an incident.
 
-The sampl
+**Challenges and solutions**
+
+i) ***Speed control***: When ego vehicle approaches near the front vehicle within buffer zone of 35 meters, the speed has to be reduced. Intially tried by tuning velocity variation with fixed value of 0.224(5m/s) and other fixed values but resulted ego vehicle moving back and forth repeatedly till change lane to pass over the vehicle instead of ego vehicle following at speed of front vehicle till lane change occurs.
+
+To realize,the logic used is the ego vehicle velocity decreases rapidly(more nearer then more speed reduction) when appraches front vehicle within buffer zone to avoid collision. Implemented in the following function.
+
+*Vehicle::realize_keep_lane()*
+
+This implemetation effectively handles by avoiding collision in situations like when suddenly a vehicle from adjacent lane changes lane and  comes within buffer zone in front of ego vehicle. This algorithm is function of behavior planner module.
+
+ii) ***Vehicles unidentified***:
 
 
 # CarND-Path-Planning-Project
