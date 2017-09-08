@@ -5,6 +5,13 @@ The steps involved in designing path planner
 
 i) **Behavior planner :** - Provides guidance to trajectory planner about what sorts of maneuvers they should plan trajectories for. (like keep lane, lane change left, lane change right)
 
+* *Cost functions*: Designed cost functions for keep lane, change lane and decision on ego vehicle behaviour is based on lower cost.
+ FSM of 3 states are used: "KL" , "LCL" and "LCR". 
+ 
+       - KL cost function: Speed cost and desire cost are the values calculated on the basis of: 
+            
+ 
+
 ii) **Trajectory planner :** - Generates drivable trajectories with ensuring max acceleration in m/s^2 and Jerk in m/s^3 are not exceeded, smooth changing of lanes to pass over the slower moving front vehicle in order to maintain less or equal to speed limit (49.5 mph).
 
 
@@ -19,15 +26,17 @@ It is also tested multiple times and ran beyond 15 miles without an incident.
 
 **Challenges and solutions**
 
-i) ***Speed control***: When ego vehicle approaches near the front vehicle within buffer zone of 35 meters, the speed has to be reduced. Intially tried by tuning velocity variation with fixed value of 0.224(5m/s) and other fixed values but resulted ego vehicle moving back and forth repeatedly till change lane to pass over the vehicle instead of ego vehicle following at speed of front vehicle till lane change occurs.
+i) ***Speed control***: When ego vehicle approaches near the front vehicle within buffer zone of 35 meters, the speed has to be reduced. Intially tried by tuning velocity variation with fixed value of 0.224 and other fixed values but resulted ego vehicle moving back and forth repeatedly till change lane to pass over the vehicle instead of ego vehicle following at speed of front vehicle till lane change occurs.
 
 To realize,the logic used is the ego vehicle velocity decreases rapidly(more nearer then more speed reduction) when appraches front vehicle within buffer zone to avoid collision. Implemented in the following function.
 
 *Vehicle::realize_keep_lane()*
 
-This implemetation effectively handles by avoiding collision in situations like when suddenly a vehicle from adjacent lane changes lane and  comes within buffer zone in front of ego vehicle. This algorithm is function of behavior planner module.
+This implemetation effectively handles by avoiding collision in situations like when suddenly a vehicle from adjacent lane changes lane and  comes within buffer zone in front of ego vehicle.
 
 ii) ***Vehicles unidentified***: These corner cases occur(when completing lap) i.e when ego vehicle and other vehicles position (s)in lanes are divided on either side of  6945.544 meters.Solution for this is implemented in function *Vehicle::cost_keep_lane* (line 143-145) and *Vehicle::cost_lane_change* (line 241-243 , 253-255 etc)
+
+iii) ***smooth trajectory***: when lane change occurs, faced problem with max jerk warning and in order to avoid this used spline technique explained in walkthrough and also number of way points redued from 50 to 30 in order to handle dynamic scenarios while tackling errant behavior of other cars in traffic.
 
 
 
