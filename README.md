@@ -5,10 +5,19 @@ The steps involved in designing path planner
 
 i) **Behavior planner :** - Provides guidance to trajectory planner about what sorts of maneuvers they should plan trajectories for. (like keep lane, lane change left, lane change right)
 
-ii) Trajectory planner : - Generates drivable trajectories with ensuring max acceleration in m/s^2 and Jerk in m/s^3 are not exceeded, smooth changing of lanes to pass over the slower moving front vehicle in order to maintain less or equal to speed limit (49.5 mph).
+ii) **Trajectory planner :** - Generates drivable trajectories with ensuring max acceleration in m/s^2 and Jerk in m/s^3 are not exceeded, smooth changing of lanes to pass over the slower moving front vehicle in order to maintain less or equal to speed limit (49.5 mph).
 
 
+### Valid Trajectories
 
+ ![](lane_change.jpg)
+
+The above screenshot shows the smooth changeover of lane with details on acceleration and jerk within limits , run beyond 1 lap and also speed limit of 49.5 mph.
+
+The sample video of run is available https://youtu.be/aHAss-NvcbU
+It is also tested multiple times and ran beyond 15 miles without an incident.
+
+The sampl
 
 
 # CarND-Path-Planning-Project
