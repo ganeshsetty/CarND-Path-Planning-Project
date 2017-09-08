@@ -5,14 +5,33 @@ The steps involved in designing path planner
 
 i) **Behavior planner :** - Provides guidance to trajectory planner about what sorts of maneuvers they should plan trajectories for. (like keep lane, lane change left, lane change right)
 
-* *Cost functions*: Designed cost functions for keep lane, change lane and decision on ego vehicle behaviour is based on lower cost.
+* **Cost functions**: Designed cost functions for keep lane, change lane and decision on ego vehicle behaviour is based on lower cost.
  FSM of 3 states are used: "KL" , "LCL" and "LCR". 
  
-       - KL cost function: Speed cost and desire cost are the values calculated on the basis of: 
+   ***KL cost function:*** Speed cost and desire cost are the values calculated on the basis of: 
+   
+       speed cost varies from 0 to 0.5(STOP_COST) and desire_cost is 0.1 or 0.6
+       i.e speed cost decreases when ego vehicle speed approaches toward speed limit 
+       and increases when slowing down.
+      
+       desire cost is when front vehicle and ego vehicle are coming nearer within  buffer zone, 
+       desire cost is elevated from 0.1 to 0.6. i.e cost increases when ego vehicle desires to continue
+       in this state("KL").  
             
- 
+    ***LC cost function:*** changing cost and desire cost are the values calculated on the basis of:
+    
+      desire cost: The cost involved by desiring to be in this state("LCL" or "LCR"). i.e when ego vehicle is too 
+      close to front vehicle, the desire cost of lane change is reduced so that it favours lane changing.
+      
+      changing cost: This is cost involved when ego vehicle wants to change to this state. 
+      When there is chances of collision is more when lane change occurs the changing cost is 
+      elevated so that penalizing the lane change.
+      
+       
 
 ii) **Trajectory planner :** - Generates drivable trajectories with ensuring max acceleration in m/s^2 and Jerk in m/s^3 are not exceeded, smooth changing of lanes to pass over the slower moving front vehicle in order to maintain less or equal to speed limit (49.5 mph).
+
+The trajectory generation uses spline technique and same implementation from walk through is adapted.
 
 
 ### Valid Trajectories
