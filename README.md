@@ -1,6 +1,8 @@
 # Path Planning
 In this project, designed a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. It also ensures self driving car to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data.
 
+**Note:** Please use updated CMakeLists.txt and files from "src" folder
+
 The steps involved in designing path planner
 
 i) **Behavior planner :** - Provides guidance to trajectory planner about what sorts of maneuvers they should plan trajectories for. (like keep lane, lane change left, lane change right)
