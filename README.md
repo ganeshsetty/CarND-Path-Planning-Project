@@ -57,7 +57,7 @@ ii) ***Vehicles unidentified***: These corner cases occur(when completing lap) i
 
 iii) ***smooth trajectory***: when lane change occurs, faced problem with max jerk warning and in order to avoid this used spline technique explained in walkthrough and also number of way points redued from 50 to 30 in order to handle dynamic scenarios while tackling errant behavior of other cars in traffic.
 
-### Reflections ###
+### Reflection ###
 
 This project demanded significant time to meet the rubric points. Had to work much on cost function design and tuning for behaviour planning of ego vehicle.
 
@@ -69,6 +69,7 @@ Max jerk is handled nicely by spline technique learned from walkthorugh.
 
 Implementation of optimized lane changing, this means that the car only changes into a lane that improves its forward progress is future work.
 
+The below content is Udacity project description
 
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
